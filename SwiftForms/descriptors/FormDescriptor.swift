@@ -16,6 +16,8 @@ public class FormDescriptor: NSObject {
     
     public var sections: [FormSectionDescriptor] = []
     
+    public var errorField = [FormRowDescriptor]()
+    
     /// MARK: Public
     
     public func addSection(section: FormSectionDescriptor) {
@@ -58,5 +60,23 @@ public class FormDescriptor: NSObject {
             }
         }
         return nil
+    }
+    
+    public func validate() -> Bool {
+        for section in sections {
+            for row in section.rows {
+                if let required = row.configuration[FormRowDescriptor.Configuration.Required] as? Bool {
+                    if required && row.value == nil {
+                        self.errorField.append(row)
+                    }
+                }
+            }
+        }
+        
+        if self.errorField.count > 0 {
+            return false;
+        }
+        
+        return true
     }
 }
